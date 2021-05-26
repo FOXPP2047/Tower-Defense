@@ -15,7 +15,12 @@ public class GameBoard : MonoBehaviour
 
     GameTileContentFactory content_factory;
 
+    bool show_grid, show_paths;
+
     Queue<GameTile> search_frontier = new Queue<GameTile>();
+
+    [SerializeField]
+    Texture2D grid_texture = default;
     public void Initialize(Vector2Int size, GameTileContentFactory content_factory)
     {
         this.size = size;
@@ -111,8 +116,20 @@ public class GameBoard : MonoBehaviour
 
         foreach (GameTile tile in tiles)
         {
-            tile.ShowPath();
+            if(!tile.HasPath)
+            {
+                return false;
+            }
         }
+
+        if(show_paths)
+        {
+            foreach (GameTile tile in tiles)
+            {
+                tile.ShowPath();
+            }
+        }
+        
         return true;
     }
 
@@ -126,6 +143,11 @@ public class GameBoard : MonoBehaviour
                 tile.Content = content_factory.Get(GameTileContentType.Destination);
                 FindPaths();
             }
+        }
+        else if(tile.Content.Type == GameTileContentType.Empty)
+        {
+            tile.Content = content_factory.Get(GameTileContentType.Destination);
+            FindPaths();
         }
         else
         {
@@ -147,5 +169,71 @@ public class GameBoard : MonoBehaviour
             return null;
         }
         return null;
+    }
+
+    public void ToggleWall(GameTile tile)
+    {
+        if(tile.Content.Type == GameTileContentType.Wall)
+        {
+            tile.Content = content_factory.Get(GameTileContentType.Empty);
+            FindPaths();
+        }
+        else if(tile.Content.Type == GameTileContentType.Empty)
+        {
+            tile.Content = content_factory.Get(GameTileContentType.Wall);
+            if(!FindPaths())
+            {
+                tile.Content = content_factory.Get(GameTileContentType.Empty);
+                FindPaths();
+            }
+        }
+        else
+        {
+            tile.Content = content_factory.Get(GameTileContentType.Wall);
+            FindPaths();
+        }
+    }
+
+    public bool ShowPaths
+    {
+        get => show_paths;
+        set
+        {
+            show_paths = value;
+            if(show_paths)
+            {
+                foreach(GameTile tile in tiles)
+                {
+                    tile.ShowPath();
+                }
+            }
+            else
+            {
+                foreach(GameTile tile in tiles)
+                {
+                    tile.HidePath();
+                }
+            }
+        }
+    }
+
+    public bool ShowGrid
+    {
+        get => show_grid;
+        set
+        {
+            show_grid = value;
+            Material m = ground.GetComponent<MeshRenderer>().material;
+
+            if (show_grid)
+            {
+                m.mainTexture = grid_texture;
+                m.SetTextureScale("_MainTex", this.size);
+            }
+            else
+            {
+                m.mainTexture = null;
+            }
+        }
     }
 }

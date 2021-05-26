@@ -9,13 +9,14 @@ public class Game : MonoBehaviour
 
     [SerializeField]
     GameBoard board = default;
-
+    
     [SerializeField]
     GameTileContentFactory tile_content_factory = default;
 
     void Awake()
     {
-        board.Initialize(board_size, tile_content_factory);    
+        board.Initialize(board_size, tile_content_factory);
+        board.ShowGrid = true;
     }
 
     private void OnValidate()
@@ -39,6 +40,30 @@ public class Game : MonoBehaviour
         {
             HandleTouch();
         }
+        else if(Input.GetMouseButtonDown(1))
+        {
+            HandleAlternativeTouch();
+        }
+
+        if(Input.GetKeyDown(KeyCode.V))
+        {
+            board.ShowPaths = !board.ShowPaths;
+        }
+
+        if(Input.GetKeyDown(KeyCode.G))
+        {
+            board.ShowGrid = !board.ShowGrid;
+        }
+    }
+
+    void HandleAlternativeTouch()
+    {
+        GameTile tile = board.GetTile(TouchRay);
+
+        if(tile != null)
+        {
+            board.ToggleDestination(tile);
+        }
     }
     void HandleTouch()
     {
@@ -46,7 +71,7 @@ public class Game : MonoBehaviour
         if(tile != null)
         {
             //tile.Content = tile_content_factory.Get(GameTileContentType.Destination);
-            board.ToggleDestination(tile);
+            board.ToggleWall(tile);
         }
     }
 }
