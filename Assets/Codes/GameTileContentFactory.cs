@@ -14,6 +14,8 @@ public class GameTileContentFactory : ScriptableObject
     GameTileContent empty_prefab = default;
     [SerializeField]
     GameTileContent wall_prefab = default;
+    [SerializeField]
+    GameTileContent spawn_point_prefab = default;
     
     public void Reclaim (GameTileContent content)
     {
@@ -56,6 +58,7 @@ public class GameTileContentFactory : ScriptableObject
             case GameTileContentType.Destination: return Get(destination_prefab);
             case GameTileContentType.Empty: return Get(empty_prefab);
             case GameTileContentType.Wall: return Get(wall_prefab);
+            case GameTileContentType.SpawnPoint: return Get(spawn_point_prefab);
         }
         Debug.AssertFormat(false, "Unspported type : ", type);
         return null;

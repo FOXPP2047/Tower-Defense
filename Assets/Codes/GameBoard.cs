@@ -21,6 +21,8 @@ public class GameBoard : MonoBehaviour
 
     [SerializeField]
     Texture2D grid_texture = default;
+
+    List<GameTile> spawn_points = new List<GameTile>();
     public void Initialize(Vector2Int size, GameTileContentFactory content_factory)
     {
         this.size = size;
@@ -61,6 +63,7 @@ public class GameBoard : MonoBehaviour
             }
         }
         ToggleDestination(tiles[tiles.Length / 2]);
+        ToggleSpawnPoint(tiles[0]);
     }
 
     bool FindPaths()
@@ -194,6 +197,22 @@ public class GameBoard : MonoBehaviour
         }
     }
 
+    public void ToggleSpawnPoint(GameTile tile)
+    {
+        if(tile.Content.Type == GameTileContentType.SpawnPoint)
+        {
+            if(spawn_points.Count > 1)
+            {
+                spawn_points.Remove(tile);
+                tile.Content = content_factory.Get(GameTileContentType.Empty);
+            }
+        }
+        else if(tile.Content.Type == GameTileContentType.Empty)
+        {
+            tile.Content = content_factory.Get(GameTileContentType.SpawnPoint);
+            spawn_points.Add(tile);
+        }
+    }
     public bool ShowPaths
     {
         get => show_paths;
