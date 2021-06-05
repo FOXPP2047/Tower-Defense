@@ -255,4 +255,11 @@ public class GameBoard : MonoBehaviour
             }
         }
     }
+
+    public GameTile GetSpawnPoint(int index)
+    {
+        return spawn_points[index];
+    }
+
+    public int SpawnPointCount => spawn_points.Count;
 }
